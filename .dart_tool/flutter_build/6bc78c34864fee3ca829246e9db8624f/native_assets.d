@@ -1,0 +1,1 @@
+ C:\\Users\\ondra\\Documents\\FlutterApps\\DateDiary\\datediary\\.dart_tool\\flutter_build\\6bc78c34864fee3ca829246e9db8624f\\native_assets.yaml: 
