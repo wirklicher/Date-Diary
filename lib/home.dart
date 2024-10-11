@@ -146,11 +146,9 @@ class _HomePage extends State<HomePage> {
                                                 color: Colors.white,
                                               ),
                                         onPressed: () async {
-                                          print(date.isFavorite);
                                           isFav =
                                               Date.intToBool(date.isFavorite);
                                           isFav = !isFav;
-                                          print("${date.name} $isFav");
                                           await DatabaseHelper.instance.update(
                                               Date(
                                                   id: date.id,
@@ -158,9 +156,9 @@ class _HomePage extends State<HomePage> {
                                                   date: date.date,
                                                   boardingGames:
                                                       date.boardingGames,
+                                                  description: date.description,
                                                   isFavorite:
                                                       Date.boolToInt(isFav)));
-                                          print(date.isFavorite.toString());
                                           setState(() {});
                                         },
                                       ),
@@ -253,6 +251,7 @@ class Date {
   String name;
   String date;
   String? boardingGames;
+  String? description;
   int isFavorite;
 
   Date(
@@ -260,6 +259,7 @@ class Date {
       required this.name,
       required this.date,
       this.boardingGames,
+      this.description,
       required this.isFavorite});
 
   factory Date.fromMap(Map<String, dynamic> json) => new Date(
@@ -267,6 +267,7 @@ class Date {
       name: json['name'],
       date: json['date'],
       boardingGames: json['boardingGames'],
+      description: json['description'],
       isFavorite: json['isFavorite']);
 
   Map<String, dynamic> toMap() {
@@ -275,6 +276,7 @@ class Date {
       'name': name,
       'date': date,
       'boardingGames': boardingGames,
+      'description': description,
       'isFavorite': isFavorite
     };
   }
@@ -307,6 +309,7 @@ id INTEGER PRIMARY KEY,
 name TEXT,
 date TEXT,
 boardingGames TEXT,
+description TEXT,
 isFavorite INTEGER
 )
 ''');
