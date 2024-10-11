@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
@@ -17,7 +19,7 @@ class _HomePage extends State<HomePage> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _boardingGamesController = TextEditingController();
-  bool click = true;
+  bool isFav = false;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +134,7 @@ class _HomePage extends State<HomePage> {
                                     child: Padding(
                                       padding: const EdgeInsets.only(top: 20.0),
                                       child: IconButton(
-                                        icon: click
+                                        icon: Date.intToBool(date.isFavorite)
                                             ? Icon(
                                                 Icons.favorite,
                                                 size: 50,
@@ -143,12 +145,23 @@ class _HomePage extends State<HomePage> {
                                                 size: 50,
                                                 color: Colors.white,
                                               ),
-                                        onPressed: () {
-                                          setState(() {
-                                            print("Changed");
-                                            click = !click;
-                                          });
-                                          ;
+                                        onPressed: () async {
+                                          print(date.isFavorite);
+                                          isFav =
+                                              Date.intToBool(date.isFavorite);
+                                          isFav = !isFav;
+                                          print("${date.name} $isFav");
+                                          await DatabaseHelper.instance.update(
+                                              Date(
+                                                  id: date.id,
+                                                  name: date.name,
+                                                  date: date.date,
+                                                  boardingGames:
+                                                      date.boardingGames,
+                                                  isFavorite:
+                                                      Date.boolToInt(isFav)));
+                                          print(date.isFavorite.toString());
+                                          setState(() {});
                                         },
                                       ),
                                     ),
@@ -224,7 +237,8 @@ class _HomePage extends State<HomePage> {
     await DatabaseHelper.instance.add(Date(
         name: _nameController.text,
         date: _dateControlller.text.split(" ")[0],
-        boardingGames: _boardingGamesController.text));
+        boardingGames: _boardingGamesController.text,
+        isFavorite: 0));
     setState(() {
       _nameController.clear();
       _dateControlller.clear();
@@ -239,23 +253,34 @@ class Date {
   String name;
   String date;
   String? boardingGames;
+  int isFavorite;
 
-  Date({this.id, required this.name, required this.date, this.boardingGames});
+  Date(
+      {this.id,
+      required this.name,
+      required this.date,
+      this.boardingGames,
+      required this.isFavorite});
 
   factory Date.fromMap(Map<String, dynamic> json) => new Date(
       id: json['id'],
       name: json['name'],
       date: json['date'],
-      boardingGames: json['boardingGames']);
+      boardingGames: json['boardingGames'],
+      isFavorite: json['isFavorite']);
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'date': date,
-      'boardingGames': boardingGames
+      'boardingGames': boardingGames,
+      'isFavorite': isFavorite
     };
   }
+
+  static bool intToBool(int a) => a == 0 ? false : true;
+  static int boolToInt(bool a) => a == true ? 1 : 0;
 }
 
 class DatabaseHelper {
@@ -281,7 +306,8 @@ CREATE TABLE dates(
 id INTEGER PRIMARY KEY,
 name TEXT,
 date TEXT,
-boardingGames TEXT
+boardingGames TEXT,
+isFavorite INTEGER
 )
 ''');
   }
@@ -297,5 +323,11 @@ boardingGames TEXT
   Future<int> add(Date date) async {
     Database db = await instance.database;
     return await db.insert('dates', date.toMap());
+  }
+
+  Future<int> update(Date date) async {
+    Database db = await instance.database;
+    return await db
+        .update('dates', date.toMap(), where: 'id = ?', whereArgs: [date.id]);
   }
 }
