@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -20,6 +21,7 @@ class _HomePage extends State<HomePage> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _boardingGamesController = TextEditingController();
   bool isFav = false;
+  List<String> imagesPath = [];
 
   @override
   Widget build(BuildContext context) {
@@ -92,13 +94,18 @@ class _HomePage extends State<HomePage> {
                                                     MediaQuery.of(context)
                                                             .size
                                                             .height *
-                                                        0.125,
+                                                        0.170,
                                                 maxWidth: MediaQuery.of(context)
                                                         .size
                                                         .width *
-                                                    0.125),
+                                                    0.170),
                                             child: Container(
                                               decoration: BoxDecoration(
+                                                image: new DecorationImage(
+                                                    image: new FileImage(File(
+                                                        date.imagesPath!
+                                                            .first)),
+                                                    fit: BoxFit.fill),
                                                 color: Colors.grey.shade200,
                                                 shape: BoxShape.circle,
                                               ),
@@ -132,7 +139,7 @@ class _HomePage extends State<HomePage> {
                                   )),
                                   Container(
                                     child: Padding(
-                                      padding: const EdgeInsets.only(top: 20.0),
+                                      padding: const EdgeInsets.only(top: 14.0),
                                       child: IconButton(
                                         icon: Date.intToBool(date.isFavorite)
                                             ? Icon(
@@ -157,6 +164,7 @@ class _HomePage extends State<HomePage> {
                                                   boardingGames:
                                                       date.boardingGames,
                                                   description: date.description,
+                                                  imagesPath: date.imagesPath,
                                                   isFavorite:
                                                       Date.boolToInt(isFav)));
                                           setState(() {});
@@ -172,6 +180,13 @@ class _HomePage extends State<HomePage> {
                       );
               }),
         ));
+  }
+
+  Future<File> saveImagePernamently(String path) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final name = basename(path);
+    final image = File('${dir.path}/$name');
+    return File(path).copy(image.path);
   }
 
   Future openDialog(context) => showDialog(
@@ -208,7 +223,16 @@ class _HomePage extends State<HomePage> {
                 ),
                 TextButton(
                     onPressed: () async {
-                      var image = await ImagePicker().pickMultiImage();
+                      try {
+                        var images = await ImagePicker().pickMultiImage();
+                        images.forEach((image) async {
+                          var imagePernament =
+                              await saveImagePernamently(image.path);
+                          imagesPath.add(imagePernament.path);
+                        });
+                      } on PlatformException catch (e) {
+                        print("Failed to pick image: $e");
+                      }
                     },
                     child: Text("Choose a photos"))
               ],
@@ -236,11 +260,15 @@ class _HomePage extends State<HomePage> {
         name: _nameController.text,
         date: _dateControlller.text.split(" ")[0],
         boardingGames: _boardingGamesController.text,
+        description: _descriptionController.text,
+        imagesPath: imagesPath,
         isFavorite: 0));
     setState(() {
       _nameController.clear();
       _dateControlller.clear();
       _boardingGamesController.clear();
+      _descriptionController.clear();
+      imagesPath.clear();
     });
     Navigator.of(context).pop();
   }
@@ -253,6 +281,7 @@ class Date {
   String? boardingGames;
   String? description;
   int isFavorite;
+  List<String>? imagesPath;
 
   Date(
       {this.id,
@@ -260,6 +289,7 @@ class Date {
       required this.date,
       this.boardingGames,
       this.description,
+      this.imagesPath,
       required this.isFavorite});
 
   factory Date.fromMap(Map<String, dynamic> json) => new Date(
@@ -268,6 +298,7 @@ class Date {
       date: json['date'],
       boardingGames: json['boardingGames'],
       description: json['description'],
+      imagesPath: json['imagesPath'].toString().split("|"),
       isFavorite: json['isFavorite']);
 
   Map<String, dynamic> toMap() {
@@ -277,7 +308,9 @@ class Date {
       'date': date,
       'boardingGames': boardingGames,
       'description': description,
-      'isFavorite': isFavorite
+      'imagesPath': imagesPath,
+      'isFavorite': isFavorite,
+      'imagesPath': imagesPath?.join('|')
     };
   }
 
@@ -310,6 +343,7 @@ name TEXT,
 date TEXT,
 boardingGames TEXT,
 description TEXT,
+imagesPath TEXT,
 isFavorite INTEGER
 )
 ''');
