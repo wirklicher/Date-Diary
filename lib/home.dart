@@ -69,114 +69,136 @@ class _HomePage extends State<HomePage> {
                         child: Text("No dates in database..."),
                       )
                     : Container(
-                        child: ListView(
-                          children: snapshot.data!.map((date) {
-                            return Center(
+                        child: ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return Center(
+                                  child: InkWell(
+                                onTap: () {
+                                  print("$snapshot.data![index].date");
+                                },
                                 child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0.0),
-                              ),
-                              color: Color(0xFF9A3135),
-                              elevation: 0,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                      child: Row(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0.0),
+                                  ),
+                                  color: Color(0xFF9A3135),
+                                  elevation: 0,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                                maxHeight:
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .height *
-                                                        0.170,
-                                                maxWidth: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.170),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                image: new DecorationImage(
-                                                    image: new FileImage(File(
-                                                        date.imagesPath!
-                                                            .first)),
-                                                    fit: BoxFit.fill),
-                                                color: Colors.grey.shade200,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              width: 75,
-                                              height: 75,
-                                            )),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 1.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(date.name,
-                                                style: TextStyle(
+                                      Container(
+                                          child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                    maxHeight:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.170,
+                                                    maxWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.170),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    image: new DecorationImage(
+                                                        image: new FileImage(
+                                                            File(snapshot
+                                                                .data![index]
+                                                                .imagesPath!
+                                                                .first)),
+                                                        fit: BoxFit.fill),
+                                                    color: Colors.grey.shade200,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  width: 75,
+                                                  height: 75,
+                                                )),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 1.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(snapshot.data![index].name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily:
+                                                            "ArgentumSans",
+                                                        fontSize: 16)),
+                                                Text(snapshot.data![index].date,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily:
+                                                            "ArgentumSans",
+                                                        fontSize: 12)),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                      Container(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 14.0),
+                                          child: IconButton(
+                                            icon: Date.intToBool(snapshot
+                                                    .data![index].isFavorite)
+                                                ? Icon(
+                                                    Icons.favorite,
+                                                    size: 50,
                                                     color: Colors.white,
-                                                    fontFamily: "ArgentumSans",
-                                                    fontSize: 16)),
-                                            Text(date.date,
-                                                style: TextStyle(
+                                                  )
+                                                : Icon(
+                                                    Icons.favorite_border,
+                                                    size: 50,
                                                     color: Colors.white,
-                                                    fontFamily: "ArgentumSans",
-                                                    fontSize: 12)),
-                                          ],
+                                                  ),
+                                            onPressed: () async {
+                                              isFav = Date.intToBool(snapshot
+                                                  .data![index].isFavorite);
+                                              isFav = !isFav;
+                                              await DatabaseHelper.instance
+                                                  .update(Date(
+                                                      id: snapshot
+                                                          .data![index].id,
+                                                      name: snapshot
+                                                          .data![index].name,
+                                                      date: snapshot
+                                                          .data![index].date,
+                                                      boardingGames: snapshot
+                                                          .data![index]
+                                                          .boardingGames,
+                                                      description:
+                                                          snapshot.data![index]
+                                                              .description,
+                                                      imagesPath: snapshot
+                                                          .data![index]
+                                                          .imagesPath,
+                                                      isFavorite:
+                                                          Date.boolToInt(
+                                                              isFav)));
+                                              setState(() {});
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ],
-                                  )),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 14.0),
-                                      child: IconButton(
-                                        icon: Date.intToBool(date.isFavorite)
-                                            ? Icon(
-                                                Icons.favorite,
-                                                size: 50,
-                                                color: Colors.white,
-                                              )
-                                            : Icon(
-                                                Icons.favorite_border,
-                                                size: 50,
-                                                color: Colors.white,
-                                              ),
-                                        onPressed: () async {
-                                          isFav =
-                                              Date.intToBool(date.isFavorite);
-                                          isFav = !isFav;
-                                          await DatabaseHelper.instance.update(
-                                              Date(
-                                                  id: date.id,
-                                                  name: date.name,
-                                                  date: date.date,
-                                                  boardingGames:
-                                                      date.boardingGames,
-                                                  description: date.description,
-                                                  imagesPath: date.imagesPath,
-                                                  isFavorite:
-                                                      Date.boolToInt(isFav)));
-                                          setState(() {});
-                                        },
-                                      ),
-                                    ),
                                   ),
-                                ],
-                              ),
-                            ));
-                          }).toList(),
-                        ),
+                                ),
+                              ));
+                            }),
                       );
               }),
         ));
