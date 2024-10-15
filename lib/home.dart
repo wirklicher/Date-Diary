@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import './datescreen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -75,7 +76,13 @@ class _HomePage extends State<HomePage> {
                               return Center(
                                   child: InkWell(
                                 onTap: () {
-                                  print("$snapshot.data![index].date");
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Datescreen(
+                                          date: snapshot.data![index],
+                                        ),
+                                      ));
                                 },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
