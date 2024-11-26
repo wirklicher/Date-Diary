@@ -84,6 +84,11 @@ class _HomePage extends State<HomePage> {
                                         ),
                                       ));
                                 },
+                                onLongPress: () {
+                                  DatabaseHelper.instance
+                                      .remove(snapshot.data![index]);
+                                  setState(() {});
+                                },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(0.0),
@@ -285,6 +290,19 @@ class _HomePage extends State<HomePage> {
   }
 
   void submit(context) async {
+    if (_nameController.text == "" || _dateControlller.text == "") {
+      Text("Neplatný název nebo datum");
+      return;
+    }
+    if (_boardingGamesController.text == "") {
+      _boardingGamesController.text = "Deskovky se nehrály";
+    }
+    if (_descriptionController.text == "") {
+      _descriptionController.text = "Bez popisku";
+    }
+    if (imagesPath.isEmpty) {
+      imagesPath = ["notExists"];
+    }
     await DatabaseHelper.instance.add(Date(
         name: _nameController.text,
         date: _dateControlller.text.split(" ")[0],
@@ -395,5 +413,10 @@ isFavorite INTEGER
     Database db = await instance.database;
     return await db
         .update('dates', date.toMap(), where: 'id = ?', whereArgs: [date.id]);
+  }
+
+  Future<int> remove(Date date) async {
+    Database db = await instance.database;
+    return await db.delete('dates', where: 'id = ?', whereArgs: [date.id]);
   }
 }

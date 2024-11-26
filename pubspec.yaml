@@ -78,6 +78,8 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  assets:
+      - assets/images/image_placeholder.png
   fonts:
      - family: ArgentumSans
        fonts:
