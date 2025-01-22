@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _HomePage extends State<HomePage> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _boardingGamesController = TextEditingController();
   bool isFav = false;
+  String errorText = "";
   List<String> imagesPath = [];
 
   @override
@@ -229,70 +231,94 @@ class _HomePage extends State<HomePage> {
 
   Future openDialog(context) => showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-            title: Text(
-              "ADD A DATE",
-              style: TextStyle(
-                  color: Color(0xFFFC4850), fontFamily: "ArgentumSans"),
-            ),
-            content: Column(
-              children: [
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: "Name of the date",
+      builder: (context) => StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+                  title: Text(
+                    "ADD A DATE",
+                    style: TextStyle(
+                        color: Color(0xFFFC4850),
+                        fontFamily: "ArgentumSans",
+                        fontSize: 24),
                   ),
-                ),
-                TextField(
-                  controller: _boardingGamesController,
-                  decoration: InputDecoration(
-                      hintText: "Name of played boarding games"),
-                ),
-                TextField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(hintText: "Description"),
-                ),
-                TextField(
-                  controller: _dateControlller,
-                  decoration: InputDecoration(
-                      labelText: "DATE",
-                      filled: true,
-                      prefixIcon: Icon(Icons.calendar_today)),
-                  readOnly: true,
-                  onTap: () {
-                    openDatePickDialog(context);
-                  },
-                ),
-                TextButton(
-                    onPressed: () async {
-                      try {
-                        var images = await ImagePicker().pickMultiImage();
-                        images.forEach((image) async {
-                          var imagePernament =
-                              await saveImagePernamently(image.path);
-                          imagesPath.add(imagePernament.path);
-
-                          setState(() {});
-                        });
-                      } on PlatformException catch (e) {
-                        print("Failed to pick image: $e");
-                      }
-                    },
-                    child: Text("Choose a photos")),
-              ],
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    submit(context);
-                  },
-                  child: Text("Submit",
-                      style: TextStyle(
-                          color: Color(0xFFFC4850),
-                          fontSize: 16,
-                          fontFamily: "ArgentumSans")))
-            ],
-          ));
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            hintText: "Name of the date",
+                          ),
+                        ),
+                        TextField(
+                          controller: _boardingGamesController,
+                          decoration: InputDecoration(
+                              hintText: "Name of played boarding games"),
+                        ),
+                        TextField(
+                          controller: _descriptionController,
+                          decoration: InputDecoration(hintText: "Description"),
+                        ),
+                        TextField(
+                          controller: _dateControlller,
+                          decoration: InputDecoration(
+                              labelText: "DATE",
+                              filled: true,
+                              prefixIcon: Icon(Icons.calendar_today)),
+                          readOnly: true,
+                          onTap: () {
+                            openDatePickDialog(context);
+                          },
+                        ),
+                        TextButton(
+                            onPressed: () async {
+                              try {
+                                var images =
+                                    await ImagePicker().pickMultiImage();
+                                images.forEach((image) async {
+                                  var imagePernament =
+                                      await saveImagePernamently(image.path);
+                                  imagesPath.add(imagePernament.path);
+                                });
+                              } on PlatformException catch (e) {
+                                print("Failed to pick image: $e");
+                              }
+                              setState(() {});
+                            },
+                            child: Text("Choose a photos",
+                                style: TextStyle(
+                                    color: Color(0xFFFC4850),
+                                    fontSize: 16,
+                                    fontFamily: "ArgentumSans"))),
+                        Text(errorText),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          submit(context);
+                          if (_nameController.text == "" ||
+                              _dateControlller.text == "") {
+                            setState(
+                              () {
+                                print(1);
+                                errorText = "Neplatný název nebo datum";
+                              },
+                            );
+                          } else {
+                            setState(
+                              () {
+                                errorText = "";
+                              },
+                            );
+                          }
+                        },
+                        child: Text("Submit",
+                            style: TextStyle(
+                                color: Color(0xFFFC4850),
+                                fontSize: 16,
+                                fontFamily: "ArgentumSans"))),
+                  ])));
 
   Future<void> openDatePickDialog(context) async {
     DateTime? _picked = await showDatePicker(
@@ -305,7 +331,6 @@ class _HomePage extends State<HomePage> {
 
   void submit(context) async {
     if (_nameController.text == "" || _dateControlller.text == "") {
-      Text("Neplatný název nebo datum");
       return;
     }
     if (_boardingGamesController.text == "") {
