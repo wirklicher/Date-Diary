@@ -40,6 +40,7 @@ class _DatescreenState extends State<Datescreen> {
             Padding(
               padding: const EdgeInsets.only(right: 48.0),
               child: Container(
+                padding: EdgeInsets.only(top: 5.0, bottom: 5.0, right: 5.0),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(8.0),
@@ -52,7 +53,7 @@ class _DatescreenState extends State<Datescreen> {
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'ArgentumSans',
-                          fontSize: 32)),
+                          fontSize: 28)),
                 ),
               ),
             ),
@@ -60,6 +61,7 @@ class _DatescreenState extends State<Datescreen> {
               padding:
                   const EdgeInsets.only(top: 8.0, left: 128.0, bottom: 8.0),
               child: Container(
+                padding: EdgeInsets.only(top: 5.0, bottom: 5.0, left: 5.0),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(8.0),
@@ -72,7 +74,7 @@ class _DatescreenState extends State<Datescreen> {
                           color: Colors.white,
                           fontWeight: FontWeight.w100,
                           fontFamily: 'ArgentumSans',
-                          fontSize: 24)),
+                          fontSize: 20)),
                 ),
               ),
             ),

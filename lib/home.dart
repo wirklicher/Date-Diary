@@ -121,12 +121,16 @@ class _HomePage extends State<HomePage> {
                                                 child: Container(
                                                   decoration: BoxDecoration(
                                                     image: new DecorationImage(
-                                                        image: new FileImage(
-                                                            File(snapshot
+                                                        image: FileImage(File(
+                                                            snapshot
                                                                 .data![index]
                                                                 .imagesPath!
                                                                 .first)),
-                                                        fit: BoxFit.fill),
+                                                        onError: (error,
+                                                                stackTrace) =>
+                                                            AssetImage(
+                                                                'assets/images/image_placeholder.png'),
+                                                        fit: BoxFit.cover),
                                                     color: Colors.grey.shade200,
                                                     shape: BoxShape.circle,
                                                   ),
@@ -226,7 +230,11 @@ class _HomePage extends State<HomePage> {
   Future openDialog(context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-            title: Text("Add a date"),
+            title: Text(
+              "ADD A DATE",
+              style: TextStyle(
+                  color: Color(0xFFFC4850), fontFamily: "ArgentumSans"),
+            ),
             content: Column(
               children: [
                 TextField(
@@ -263,12 +271,14 @@ class _HomePage extends State<HomePage> {
                           var imagePernament =
                               await saveImagePernamently(image.path);
                           imagesPath.add(imagePernament.path);
+
+                          setState(() {});
                         });
                       } on PlatformException catch (e) {
                         print("Failed to pick image: $e");
                       }
                     },
-                    child: Text("Choose a photos"))
+                    child: Text("Choose a photos")),
               ],
             ),
             actions: [
@@ -276,7 +286,11 @@ class _HomePage extends State<HomePage> {
                   onPressed: () {
                     submit(context);
                   },
-                  child: Text("Submit"))
+                  child: Text("Submit",
+                      style: TextStyle(
+                          color: Color(0xFFFC4850),
+                          fontSize: 16,
+                          fontFamily: "ArgentumSans")))
             ],
           ));
 
