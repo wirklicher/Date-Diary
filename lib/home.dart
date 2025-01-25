@@ -1,4 +1,5 @@
 import 'dart:async';
+// ignore: unused_import
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -18,13 +19,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  TextEditingController _dateControlller = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _boardingGamesController = TextEditingController();
+  late TextEditingController _dateControlller;
+  late TextEditingController _descriptionController;
+  late TextEditingController _nameController;
+  late TextEditingController _boardingGamesController;
+
   bool isFav = false;
   String errorText = "";
   List<String> imagesPath = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _dateControlller = TextEditingController();
+    _descriptionController = TextEditingController();
+    _nameController = TextEditingController();
+    _boardingGamesController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _dateControlller.dispose();
+    _descriptionController.dispose();
+    _nameController.dispose();
+    _boardingGamesController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +91,13 @@ class _HomePage extends State<HomePage> {
                 }
                 return snapshot.data!.isEmpty
                     ? Center(
-                        child: Text("No dates in database..."),
+                        child: Text(
+                          "No dates in database...",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "ArgentumSans",
+                              fontSize: 20),
+                        ),
                       )
                     : Container(
                         child: ListView.builder(
@@ -396,6 +424,7 @@ class Date {
       'description': description,
       'imagesPath': imagesPath,
       'isFavorite': isFavorite,
+      // ignore: equal_keys_in_map
       'imagesPath': imagesPath?.join('|')
     };
   }

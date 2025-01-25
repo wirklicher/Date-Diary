@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'home.dart';
+// ignore: unused_import
 import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 
+// ignore: must_be_immutable
 class Datescreen extends StatefulWidget {
   Date date;
   Datescreen({super.key, required this.date});
