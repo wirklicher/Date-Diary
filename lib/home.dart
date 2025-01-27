@@ -25,6 +25,7 @@ class _HomePage extends State<HomePage> {
   late TextEditingController _boardingGamesController;
 
   bool isFav = false;
+  bool errorDialogMessage = false;
   String errorText = "";
   List<String> imagesPath = [];
 
@@ -86,7 +87,11 @@ class _HomePage extends State<HomePage> {
                   (BuildContext context, AsyncSnapshot<List<Date>> snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
-                    child: Text("Loading..."),
+                    child: Text("Loading...",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "ArgentumSans",
+                            fontSize: 20)),
                   );
                 }
                 return snapshot.data!.isEmpty
@@ -317,7 +322,13 @@ class _HomePage extends State<HomePage> {
                                     color: Color(0xFFFC4850),
                                     fontSize: 16,
                                     fontFamily: "ArgentumSans"))),
-                        Text(errorText),
+                        Container(
+                            child: errorDialogMessage
+                                ? Text("Neplatný název nebo datum")
+                                : Container(
+                                    width: 0,
+                                    height: 0,
+                                  ))
                       ],
                     ),
                   ),
@@ -330,13 +341,13 @@ class _HomePage extends State<HomePage> {
                             setState(
                               () {
                                 print(1);
-                                errorText = "Neplatný název nebo datum";
+                                errorDialogMessage = true;
                               },
                             );
                           } else {
                             setState(
                               () {
-                                errorText = "";
+                                errorDialogMessage = false;
                               },
                             );
                           }
@@ -350,7 +361,17 @@ class _HomePage extends State<HomePage> {
 
   Future<void> openDatePickDialog(context) async {
     DateTime? _picked = await showDatePicker(
-        context: context, firstDate: DateTime(1900), lastDate: DateTime(2100));
+      context: context,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+      locale: const Locale('en', 'GB'),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(primaryColor: Color(0xFFFC4850)),
+          child: child!,
+        );
+      },
+    );
 
     if (_picked != null) {
       _dateControlller.text = _picked.toString().split(" ")[0];

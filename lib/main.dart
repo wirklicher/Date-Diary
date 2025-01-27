@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import './home.dart';
 
 void main() {
@@ -14,6 +15,12 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       home: HomePage(),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: <Locale>[
+        const Locale('cs', 'CZ'),
+        const Locale('en', 'GB'),
+        const Locale('de', 'DE')
+      ],
     );
   }
 }
