@@ -367,7 +367,19 @@ class _HomePage extends State<HomePage> {
       locale: const Locale('en', 'GB'),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(primaryColor: Color(0xFFFC4850)),
+          data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Color(0xFFFC4850),
+                onPrimary: Colors.white,
+                onSurface: Colors.black,
+              ),
+              datePickerTheme: DatePickerThemeData(
+                  headerBackgroundColor: Color(0xFFFC4850),
+                  headerHeadlineStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ))),
           child: child!,
         );
       },
